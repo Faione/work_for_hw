@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  node_exporter:
+    image: docker.io/bitnami/node-exporter:1.6.0
+    container_name: node_exporter
+    command:
+      - '--path.rootfs=/host'
+    network_mode: host
+    pid: host
+    restart: unless-stopped
+    cpuset: "60-79,140-159"
+    volumes:
+      - '/:/host:ro,rslave'
+
+  libvirt_exporter:
+    image: docker.io/faione/libvirt-exporter:0.0.2
+    container_name: libvirt_exporter
+    ports:
+      - 9177:9177
+    cpuset: "60-79,140-159"
+    volumes:
+      - '/var/run/libvirt:/var/run/libvirt'
+
+  resctrl_exporter:
+    image: docker.io/faione/resctrl_exporter:0.0.2
+    container_name: resctrl_exporter
+    network_mode: host
+    cpuset: "60-79,140-159"
+    volumes:
+      - '/sys/fs/resctrl:/sys/fs/resctrl:ro'
+
+  ebpf_exporter:
+    image: docker.io/faione/ebpf_exporter:v0.0.1
+    container_name: ebpf_exporter
+    privileged: true
+    ports:
+      - 9177:9177
+    cpuset: "60-79,140-159"
+    volumes:
+      - './ebpfs/:/ebpfs'
+      - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
+      - '/sys/fs/bpf:/sys/fs/bpf'
+    command:
+      [
+        "--config.dir",
+        "/ebpfs",
+        "--config.names",
+        "syscall,syscalls"
+      ]

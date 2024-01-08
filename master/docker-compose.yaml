@@ -1,0 +1,32 @@
+version: "3.3"
+
+volumes:
+  grafana:
+    driver: local
+  prometheus:
+    driver: local
+
+services:
+  grafana:
+    image: ict.acs.edu/infra/grafana:9.5.2
+    environment:
+      # allow to use plugins
+      - GF_PLUGIN_ALLOW_LOCAL_MODE=true
+    ports:
+      - 3001:3000
+    volumes:
+      - grafana:/var/lib/grafana
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/dashboards:/etc/dashboards
+
+  prometheus:
+    image: ict.acs.edu/infra/prometheus:2.44.0
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--web.enable-lifecycle"
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+      - prometheus:/opt/bitnami/prometheus/data

@@ -1,0 +1,15 @@
+metrics:
+  counters:
+    - name: syscalls_per_cgroup
+      help: Total number of executed syscalls by name, per cgroup
+      labels:
+        - name: cgroup
+          size: 8
+          decoders:
+            - name: uint
+            - name: cgroup
+        - name: syscall
+          size: 8
+          decoders:
+            - name: uint
+            - name: syscall
