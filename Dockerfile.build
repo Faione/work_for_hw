@@ -1,0 +1,25 @@
+FROM localhost/libvirt-exporter-builder:v0.0.1 AS build
+
+ARG VERSION
+
+ENV VERSION=${VERSION:-development}
+
+ENV LIBVIRT_EXPORTER_PATH=/libvirt-exporter
+
+RUN mkdir -p $LIBVIRT_EXPORTER_PATH
+
+WORKDIR $LIBVIRT_EXPORTER_PATH
+
+COPY . .
+
+RUN go build -ldflags="-X 'main.Version=${VERSION}'" -mod vendor
+
+FROM docker.io/library/alpine:3.18
+
+RUN apk add ca-certificates libvirt
+
+COPY --from=build $LIBVIRT_EXPORTER_PATH/libvirt-exporter /
+
+EXPOSE 9177
+
+ENTRYPOINT [ "/libvirt-exporter" ]
