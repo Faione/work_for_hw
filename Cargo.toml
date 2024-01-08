@@ -1,0 +1,18 @@
+[package]
+name = "kernel_path"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.75"
+clap = { version = "4.3.21", features = ["derive"] }
+libbpf-rs = "0.21.2"
+nix = "0.26.2"
+plain = "0.2.3"
+tokio = { version = "1.32.0", features = ["full"] }
+
+[build-dependencies]
+libbpf-cargo = "0.21.2"
+regex = "1.9.3"
