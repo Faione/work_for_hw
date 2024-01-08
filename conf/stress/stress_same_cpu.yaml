@@ -1,0 +1,70 @@
+default_opt_interval: 16
+data_root: "/home/fhl/Workplace/Python/appProfile/data/stress/same_cpu"
+
+workload_exec:
+    - flags:
+          "--cache":
+              start: 0
+              end: 6
+              map: "lambda x: 2**x"
+      raw:
+          warmup_cmd: "ssh fhl@worknode-01 \"sleep 2; ./sync_task.sh\" &"
+          cmd_base: "ssh fhl@worknode-01 sudo podman exec"
+          flag_base: "-i stress /stress-ng -t 120"
+          type: "cache"
+    - flags:
+          "--cpu": 4
+          "--cpu-load": [20, 40, 60, 80, 100]
+      raw:
+          warmup_cmd: "ssh fhl@worknode-01 \"sleep 2; ./sync_task.sh\" &"
+          cmd_base: "ssh fhl@worknode-01 sudo podman exec"
+          flag_base: "-i stress /stress-ng -t 120"
+          type: "cpu"
+    - flags:
+          "--iomix":
+              start: 0
+              end: 6
+              map: "lambda x: 2**x"
+      raw:
+          warmup_cmd: "ssh fhl@worknode-01 \"sleep 2; ./sync_task.sh\" &"
+          cmd_base: "ssh fhl@worknode-01 sudo podman exec"
+          flag_base: "-i stress /stress-ng -t 120"
+          type: "io"
+    - flags:
+          "--vm":
+              start: 0
+              end: 6
+              map: "lambda x: 2**x"
+      raw:
+          warmup_cmd: "ssh fhl@worknode-01 \"sleep 2; ./sync_task.sh\" &"
+          cmd_base: "ssh fhl@worknode-01 sudo podman exec"
+          flag_base: "-i stress /stress-ng -t 120"
+          type: "vm"
+    - flags:
+          "--sock":
+              start: 0
+              end: 6
+              map: "lambda x: 2**x"
+      raw:
+          warmup_cmd: "ssh fhl@worknode-01 \"sleep 2; ./sync_task.sh\" &"
+          cmd_base: "ssh fhl@worknode-01 sudo podman exec"
+          flag_base: "-i stress /stress-ng -t 120"
+          type: "net"
+          
+experiment:
+    raw:
+        date_format: "timestamp"
+        n_epoch: 1
+    save_file: "exp.json"
+
+collect:
+    grafana:
+        auth: "admin:admin@"
+        server: "localhost:3001"
+    prometheus:
+        server: "localhost:9090"
+    query:
+        dashboard: 
+            - "container"
+        step: "4s"
+    save_file: "merged.csv"

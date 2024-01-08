@@ -1,0 +1,86 @@
+default_opt_interval: 32
+data_root: "/home/fhl/Workplace/Python/appProfile/data/redis_1/same_thread"
+
+workload_exec:
+    - flags:
+          "-s": "envoy"
+          "--test-time": 160
+          "-t":
+              start: 0
+              end: 9
+              map: "lambda x: 2**x"
+      raw:
+          cmd_base: "docker exec -it redis-client-1 memtier_benchmark"
+          type: "redis"
+          warmup_cmd: "docker exec -it redis-client-1 memtier_benchmark -s envoy --test-time 10"
+    
+stress_exec:            
+    - flags:
+          "--cache":
+              start: 0
+              end: 6
+              map: "lambda x: 2**x"
+      raw:
+          cmd_base: "ssh fhl@worknode-01 sudo podman run"
+          flag_base: "-d --rm --cpuset-cpus 40-43 localhost/my-stress-ng:v0.1"
+          stop_cmd: "ssh fhl@worknode-01 sudo podman stop"
+          type: "cache"
+    - flags:
+          "--cpu": 4
+          "--cpu-load": [20, 40, 60, 80, 100]
+      raw:
+          cmd_base: "ssh fhl@worknode-01 sudo podman run"
+          flag_base: "-d --rm --cpuset-cpus 40-43 localhost/my-stress-ng:v0.1"
+          stop_cmd: "ssh fhl@worknode-01 sudo podman stop"
+          type: "cpu"
+    - flags:
+          "--iomix":
+              start: 0
+              end: 6
+              map: "lambda x: 2**x"
+      raw:
+          cmd_base: "ssh fhl@worknode-01 sudo podman run"
+          flag_base: "-d --rm --cpuset-cpus 40-43 localhost/my-stress-ng:v0.1"
+          stop_cmd: "ssh fhl@worknode-01 sudo podman stop"
+          type: "io"
+    - flags:
+          "--vm":
+              start: 0
+              end: 6
+              map: "lambda x: 2**x"
+      raw:
+          cmd_base: "ssh fhl@worknode-01 sudo podman run"
+          flag_base: "-d --rm --cpuset-cpus 40-43 localhost/my-stress-ng:v0.1"
+          stop_cmd: "ssh fhl@worknode-01 sudo podman stop"
+          type: "vm"            
+    - flags:
+          "--sock":
+              start: 0
+              end: 6
+              map: "lambda x: 2**x"
+      raw:
+          cmd_base: "ssh fhl@worknode-01 sudo podman run"
+          flag_base: "-d --rm --cpuset-cpus 40-43 localhost/my-stress-ng:v0.1"
+          stop_cmd: "ssh fhl@worknode-01 sudo podman stop"
+          type: "net"
+ 
+        
+experiment:
+    raw:
+        date_format: "timestamp"
+    save_file: "exp.json"
+
+collect:
+    grafana:
+        auth: "admin:admin@"
+        server: "localhost:3001"
+    prometheus:
+        server: "localhost:9090"
+    query:
+        dashboard: 
+            - "aio"
+            - "host"
+            - "vm"
+            - "app"
+        step: "4s"
+    save_file: "merged.csv"

@@ -1,0 +1,36 @@
+default_opt_interval: 32
+data_root: "/home/fhl/Workplace/Python/appProfile/data/redis_1/no_stress"
+
+workload_exec:
+    - flags:
+          "-s": "envoy"
+          "--test-time": 160
+          "-t": 
+              start: 0
+              end: 15
+              map: "lambda x: 2**x"
+      raw:
+          cmd_base: "docker exec -it redis-client-1 memtier_benchmark"
+          type: "redis"
+          warmup_cmd: "docker exec -it redis-client-1 memtier_benchmark -s envoy --test-time 10"
+       
+experiment:
+    raw:
+        date_format: "timestamp"
+        n_epoch: 1
+    save_file: "exp.json"
+
+collect:
+    grafana:
+        auth: "admin:admin@"
+        server: "localhost:3001"
+    prometheus:
+        server: "localhost:9090"
+    query:
+        dashboard: 
+            - "aio"
+            - "host"
+            - "vm"
+            - "app"
+        step: "4s"
+    save_file: "merged.csv"

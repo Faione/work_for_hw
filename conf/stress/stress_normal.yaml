@@ -1,0 +1,31 @@
+default_opt_interval: 16
+data_root: "/home/fhl/Workplace/Python/appProfile/data/stress_test/normal"
+
+workload_exec:
+    - flags:
+          "--memrate":
+              start: 0
+              end: 7
+              map: "lambda x: 2**x"
+      raw:
+          cmd_base: "ssh fhl@worknode-01 /home/fhl/Worklpace/Shell/run_stress.sh"
+          flag_base: "-i stress /stress-ng -t 120"
+          type: "mem"
+          
+experiment:
+    raw:
+        date_format: "timestamp"
+        n_epoch: 1
+    save_file: "exp.json"
+
+collect:
+    grafana:
+        auth: "admin:admin@"
+        server: "localhost:3001"
+    prometheus:
+        server: "localhost:9090"
+    query:
+        dashboard: 
+            - "container"
+        step: "4s"
+    save_file: "merged.csv"

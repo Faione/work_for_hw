@@ -1,0 +1,148 @@
+default_opt_interval: 16
+data_root: "/home/fhl/Workplace/Python/appProfile/data/stress_eligate"
+
+workload_exec:
+    - flags:
+          "--cpu": 4
+          "--cpu-load": [20, 40, 60, 80, 100]
+      raw:
+          cmd_base: "ssh fhl@worknode-01 /home/fhl/Worklpace/Shell/run_stress.sh"
+          flag_base: "-i stress /stress-ng -t 100"
+          type: "cpu"
+    - flags:
+          "--cache-level": 3
+          "--cache":
+              start: 0
+              end: 6
+              map: "lambda x: 2**x"
+      raw:
+          cmd_base: "ssh fhl@worknode-01 /home/fhl/Worklpace/Shell/run_stress.sh"
+          flag_base: "-i stress /stress-ng -t 100"
+          type: "cache"
+    - flags:
+          "--cache-level": 3
+          "--icache":
+              start: 0
+              end: 6
+              map: "lambda x: 2**x"
+      raw:
+          cmd_base: "ssh fhl@worknode-01 /home/fhl/Worklpace/Shell/run_stress.sh"
+          flag_base: "-i stress /stress-ng -t 100"
+          type: "cache-ins"
+    - flags:
+          "--iomix":
+              start: 0
+              end: 6
+              map: "lambda x: 2**x"
+      raw:
+          cmd_base: "ssh fhl@worknode-01 /home/fhl/Worklpace/Shell/run_stress.sh"
+          flag_base: "-i stress /stress-ng -t 100"
+          type: "io"
+    - flags:
+          "--hdd":
+              start: 0
+              end: 6
+              map: "lambda x: 2**x"
+      raw:
+          cmd_base: "ssh fhl@worknode-01 /home/fhl/Worklpace/Shell/run_stress.sh"
+          flag_base: "-i stress /stress-ng -t 100"
+          type: "io-hdd"
+    - flags:
+          "--seek":
+              start: 0
+              end: 6
+              map: "lambda x: 2**x"
+      raw:
+          cmd_base: "ssh fhl@worknode-01 /home/fhl/Worklpace/Shell/run_stress.sh"
+          flag_base: "-i stress /stress-ng -t 100"
+          type: "io-seek"
+    - flags:
+          "--vm":
+              start: 0
+              end: 6
+              map: "lambda x: 2**x"
+      raw:
+          cmd_base: "ssh fhl@worknode-01 /home/fhl/Worklpace/Shell/run_stress.sh"
+          flag_base: "-i stress /stress-ng -t 100"
+          type: "mem-vm"
+    - flags:
+          "--vm-addr":
+              start: 0
+              end: 6
+              map: "lambda x: 2**x"
+      raw:
+          cmd_base: "ssh fhl@worknode-01 /home/fhl/Worklpace/Shell/run_stress.sh"
+          flag_base: "-i stress /stress-ng -t 100"
+          type: "mem-vm-addr"
+    - flags:
+          "--vm-rw":
+              start: 0
+              end: 6
+              map: "lambda x: 2**x"
+      raw:
+          cmd_base: "ssh fhl@worknode-01 /home/fhl/Worklpace/Shell/run_stress.sh"
+          flag_base: "-i stress /stress-ng -t 100"
+          type: "mem-vm-rw" 
+    - flags:
+          "--memrate":
+              start: 0
+              end: 6
+              map: "lambda x: 2**x"
+      raw:
+          cmd_base: "ssh fhl@worknode-01 /home/fhl/Worklpace/Shell/run_stress.sh"
+          flag_base: "-i stress /stress-ng -t 100"
+          type: "mem-rate"
+    - flags:
+          "--malloc":
+              start: 0
+              end: 6
+              map: "lambda x: 2**x"
+      raw:
+          cmd_base: "ssh fhl@worknode-01 /home/fhl/Worklpace/Shell/run_stress.sh"
+          flag_base: "-i stress /stress-ng -t 100"
+          type: "mem-malloc"
+    - flags:
+          "--memcpy":
+              start: 0
+              end: 6
+              map: "lambda x: 2**x"
+      raw:
+          cmd_base: "ssh fhl@worknode-01 /home/fhl/Worklpace/Shell/run_stress.sh"
+          flag_base: "-i stress /stress-ng -t 100"
+          type: "mem-memcpy"
+    - flags:
+          "--sock":
+              start: 0
+              end: 6
+              map: "lambda x: 2**x"
+      raw:
+          cmd_base: "ssh fhl@worknode-01 /home/fhl/Worklpace/Shell/run_stress.sh"
+          flag_base: "-i stress /stress-ng -t 100"
+          type: "net-sock"
+    - flags:
+          "--udp":
+              start: 0
+              end: 6
+              map: "lambda x: 2**x"
+      raw:
+          cmd_base: "ssh fhl@worknode-01 /home/fhl/Worklpace/Shell/run_stress.sh"
+          flag_base: "-i stress /stress-ng -t 100"
+          type: "net-udp"
+          
+experiment:
+    raw:
+        date_format: "timestamp"
+        n_epoch: 1
+    save_file: "exp.json"
+
+collect:
+    grafana:
+        auth: "admin:admin@"
+        server: "localhost:3001"
+    prometheus:
+        server: "localhost:9090"
+    query:
+        dashboard: 
+            - "container"
+        step: "4s"
+    save_file: "merged.csv"
