@@ -48,3 +48,21 @@ services:
         "--config.names",
         "syscall,syscalls"
       ]
+
+  kvm_exporter:
+    image: docker.io/faione/kvm_exporter:0.0.1
+    container_name: kvm_exporter
+    privileged: true
+    ports:
+      - 9991:9991
+    cpuset: "60-79,140-159"
+    volumes:
+      - './vm_infos.yaml:/etc/vm.yaml'
+      - '/sys/kernel/debug/kvm:/stat/kvm'
+    command:
+      [
+        "--collector.kvmdebug.dir",
+        "/stat/kvm",
+        "--web.listen-address",
+        ":9991"
+      ]

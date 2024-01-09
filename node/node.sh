@@ -9,11 +9,13 @@ node_exporter_cname=${dir_name}-node-exporter
 libvirt_exporter_cname=${dir_name}-libvirt-exporter
 resctrl_exporter_cname=${dir_name}-resctrl-exporter
 ebpf_exporter_cname=${dir_name}-ebpf-exporter
+kvm_exporter_cname=${dir_name}-kvm-exporter
 
 node_exporter_image="docker.io/bitnami/node-exporter:1.6.0"
 libvirt_exporter_image="${repo}/libvirt-exporter:0.0.2"
 resctrl_exporter_image="${repo}/rectrl_exporter:0.0.2"
 ebpf_exporter_image="${repo}/ebpf_exporter:v0.0.1"
+kvm_exporter_image="${repo}/kvm_exporter:0.0.1"
 
 node_exporter() {
     $doas $runtime run \
@@ -62,6 +64,20 @@ ebpf_exporter() {
         "--config.dir" "/ebpfs" "--config.names" "syscall,syscalls"
 }
 
+kvm_exporter() {
+    $doas $runtime run \
+        -d --restart unless-stopped \
+        --cpuset-mems=$numa \
+        --network host \
+	    --name $kvm_exporter_cname \
+        --privileged \
+        -v $PWD/vm_infos.yaml:/etc/vm.yaml \
+        -v /sys/kernel/debug/kvm:/stat/kvm \
+        $kvm_exporter_image \
+        "--collector.kvmdebug.dir /stat/kvm --web.listen-address :9991"
+}
+
+
 stop_and_rm() {
     $doas $runtime stop $1 && $doas $runtime rm $1
 }
@@ -71,6 +87,7 @@ up() {
     libvirt_exporter
     resctrl_exporter
     ebpf_exporter
+    kvm_exporter
 }
 
 down() {
@@ -78,4 +95,5 @@ down() {
     stop_and_rm $libvirt_exporter_cname
     stop_and_rm $resctrl_exporter_cname
     stop_and_rm $ebpf_exporter_cname
+    stop_and_rm $kvm_exporter_cname
 }

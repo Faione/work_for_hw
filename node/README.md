@@ -4,8 +4,9 @@
 | :--------------: | :---------------: | :-------------------------------------------------------------------: |
 |  docker.io/bitnami/node-exporter:1.6.0   |       host        |      通过kernel监控host上资源使用，如 cpu, mem, network, block等      |
 | docker.io/faione/libvirt-exporter:0.0.2 |  virtual machine  | 通过hypervisor监控vm的资源使用，如 vcpu，mem，network，block，perf 等 |
-| docker.io/faione/rectrl_exporter:0.0.2 | resctrl subsystem |         通过 Intel RDT 技术监控 host 上llc, mem b/w 使用情况          |
-|  docker.io/faione/resctrl_exporter:v0.0.1   |     ebpf maps     |           通过 kenrnel hook 获取host/cgroup中进程行为的信息           |
+| docker.io/faione/resctrl_exporter:0.0.2 | resctrl subsystem |         通过 Intel RDT 技术监控 host 上llc, mem b/w 使用情况          |
+|  docker.io/faione/ebpf_exporter:v0.0.1   |     ebpf maps     |           通过 kenrnel hook 获取host/cgroup中进程行为的信息           |
+|  docker.io/faione/kvm_exporter:0.0.1   |     kvm     |           通过 kvm debugfs 获取 kvm 中虚拟机的监控事件信息           |
 
 ## Config
 

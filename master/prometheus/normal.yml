@@ -1,0 +1,15 @@
+- targets: ["worknode:9100"]
+  labels:
+    job: "node_exporter"
+- targets: ["worknode:9177"]
+  labels:
+    job: "libvirt_exporter"
+- targets: ["worknode:9900"]
+  labels:
+    job: "resctrl_exporter"
+- targets: ["worknode:9435"]
+  labels:
+    job: "ebpf_exporter"
+- targets: ["worknode:9991"]
+  labels:
+    job: "kvm_exporter"

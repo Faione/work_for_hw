@@ -1,4 +1,4 @@
-# Virtual Machine Scenario
+# Monitor Stack
 
 若干物理机网络互相联通构成裸机集群
 - 物理机安装 hypervisor 程序
@@ -11,3 +11,11 @@
   - prometheus: 数据的采集、存储与查询
   - grafana/grafana tools/analysis code: 数据导出、展示与分析
   - master可以是node，也可以根据负载需求仅提供上述采集、分析能力
+
+## Master
+
+[master部署文档](master/README.md)
+
+## Node
+
+[node部署文档](node/README.md)
