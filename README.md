@@ -10,3 +10,4 @@
 - kernel_exporter: syscall数据采集器
 - libvirt_exporter: libvirt数据采集器
 - node_exporter: host数数据采集器
+- cgroup_bpf_map: 与pin map交互的工具，用以指定 kernel_exporter 的监控目标
