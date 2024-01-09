@@ -1,108 +1,34 @@
-# Prometheus libvirt exporter
+# Libvirt Exporter
 
-Docker image is available at [dockerhub](https://hub.docker.com/r/alekseizakharov/libvirt-exporter).
+通过 libvirt api 与 qemu 交互，暴漏 hypervisor 的监控信息
+- 提供了对虚拟机 perf event 的监控
+- 复用了[libvirt](https://github.com/Tinkoff/libvirt-exporter)中的其他采集功能
 
- - `Dockerfile` - creates a docker container with dynamically linked libvirt-exporter. Make an image and run with `docker container run -p9177:9177 -v /var/run/libvirt:/var/run/libvirt yourcontainername`. Based on the latest golang:alpine.
- - `build-with` - builds dynamically linked libvirt-exporter in the container based on Dockerfile specified as an argument. Ex.: `build-with ./build_container/Dockerfile.ubuntu2004` will build libvirt-exporter for Ubuntu 20.04.
+编译及运行[参考](README.en.md)
 
-# Metrics
-The following metrics/labels are being exported:
+## Perf Event 支持
 
-```
-libvirt_domain_block_meta{bus="scsi",cache="none",discard="unmap",disk_type="network",domain="instance-00000337",driver_type="raw",serial="5f1a922c-e4b5-4020-9308-d70fd8219ac8",source_file="somepool/volume-5f1a922c-e4b5-4020-9308-d70fd8219ac8",target_device="sda"} 1
-libvirt_domain_block_stats_allocation{domain="instance-00000337",target_device="sda"} 2.1474816e+10
-libvirt_domain_block_stats_capacity_bytes{domain="instance-00000337",target_device="sda"} 2.147483648e+10
-libvirt_domain_block_stats_flush_requests_total{domain="instance-00000337",target_device="sda"} 5.153142e+06
-libvirt_domain_block_stats_flush_time_seconds_total{domain="instance-00000337",target_device="sda"} 473.56850521
-libvirt_domain_block_stats_limit_burst_length_read_requests_seconds{domain="instance-00000337",target_device="sda"} 0
-libvirt_domain_block_stats_limit_burst_length_total_requests_seconds{domain="instance-00000337",target_device="sda"} 0
-libvirt_domain_block_stats_limit_burst_length_write_requests_seconds{domain="instance-00000337",target_device="sda"} 0
-libvirt_domain_block_stats_limit_burst_read_bytes{domain="instance-00000337",target_device="sda"} 0
-libvirt_domain_block_stats_limit_burst_read_bytes_length_seconds{domain="instance-00000337",target_device="sda"} 0
-libvirt_domain_block_stats_limit_burst_read_requests{domain="instance-00000337",target_device="sda"} 0
-libvirt_domain_block_stats_limit_burst_total_bytes{domain="instance-00000337",target_device="sda"} 0
-libvirt_domain_block_stats_limit_burst_total_bytes_length_seconds{domain="instance-00000337",target_device="sda"} 0
-libvirt_domain_block_stats_limit_burst_total_requests{domain="instance-00000337",target_device="sda"} 0
-libvirt_domain_block_stats_limit_burst_write_bytes{domain="instance-00000337",target_device="sda"} 0
-libvirt_domain_block_stats_limit_burst_write_bytes_length_seconds{domain="instance-00000337",target_device="sda"} 0
-libvirt_domain_block_stats_limit_burst_write_requests{domain="instance-00000337",target_device="sda"} 0
-libvirt_domain_block_stats_limit_read_bytes{domain="instance-00000337",target_device="sda"} 0
-libvirt_domain_block_stats_limit_read_requests{domain="instance-00000337",target_device="sda"} 640
-libvirt_domain_block_stats_limit_total_bytes{domain="instance-00000337",target_device="sda"} 1.572864e+08
-libvirt_domain_block_stats_limit_total_requests{domain="instance-00000337",target_device="sda"} 0
-libvirt_domain_block_stats_limit_write_bytes{domain="instance-00000337",target_device="sda"} 0
-libvirt_domain_block_stats_limit_write_requests{domain="instance-00000337",target_device="sda"} 320
-libvirt_domain_block_stats_physicalsize_bytes{domain="instance-00000337",target_device="sda"} 2.147483648e+10
-libvirt_domain_block_stats_read_bytes_total{domain="instance-00000337",target_device="sda"} 1.7704034304e+11
-libvirt_domain_block_stats_read_requests_total{domain="instance-00000337",target_device="sda"} 1.9613982e+07
-libvirt_domain_block_stats_read_time_seconds_total{domain="instance-00000337",target_device="sda"} 161803.085086353
-libvirt_domain_block_stats_size_iops_bytes{domain="instance-00000337",target_device="sda"} 0
-libvirt_domain_block_stats_write_bytes_total{domain="instance-00000337",target_device="sda"} 9.2141217792e+11
-libvirt_domain_block_stats_write_requests_total{domain="instance-00000337",target_device="sda"} 2.8434899e+07
-libvirt_domain_block_stats_write_time_seconds_total{domain="instance-00000337",target_device="sda"} 530522.437009019
-
-libvirt_pool_info_allocation_bytes{pool="default"} 5.4276182016e+10
-libvirt_pool_info_available_bytes{pool="default"} 5.1278647296e+10
-libvirt_pool_info_capacity_bytes{pool="default"} 1.05554829312e+11
-
-libvirt_domain_info_cpu_time_seconds_total{domain="instance-00000337"} 949422.12
-libvirt_domain_info_maximum_memory_bytes{domain="instance-00000337"} 8.589934592e+09
-libvirt_domain_info_memory_usage_bytes{domain="instance-00000337"} 8.589934592e+09
-libvirt_domain_info_meta{domain="instance-00000337",flavor="someflavor-8192",instance_name="name.of.instance.com",project_name="instance.com",project_uuid="3051f6f46d394ab98f55a0670ae5c70b",root_type="image",root_uuid="155e5ab9-d28c-48f2-bd8d-f193d0a6128a",user_name="master_admin",user_uuid="240270fa2a3e4fd3baa6d6e776669b19",uuid="1bac351f-242e-4d53-8cf3-fd91b061069c"} 1
-libvirt_domain_info_virtual_cpus{domain="instance-00000337"} 2
-libvirt_domain_info_vstate{domain="instance-00000337"} 1
-
-libvirt_domain_interface_meta{domain="instance-00000337",source_bridge="br-int",target_device="tapa7e2fe95-a7",virtual_interface="a7e2fe95-a7cf-4bec-8180-d835cf342d72"} 1
-libvirt_domain_interface_stats_receive_bytes_total{domain="instance-00000337",target_device="tapa7e2fe95-a7"} 7.9182281e+09
-libvirt_domain_interface_stats_receive_drops_total{domain="instance-00000337",target_device="tapa7e2fe95-a7"} 0
-libvirt_domain_interface_stats_receive_errors_total{domain="instance-00000337",target_device="tapa7e2fe95-a7"} 0
-libvirt_domain_interface_stats_receive_packets_total{domain="instance-00000337",target_device="tapa7e2fe95-a7"} 4.378193e+06
-libvirt_domain_interface_stats_transmit_bytes_total{domain="instance-00000337",target_device="tapa7e2fe95-a7"} 1.819996331e+09
-libvirt_domain_interface_stats_transmit_drops_total{domain="instance-00000337",target_device="tapa7e2fe95-a7"} 0
-libvirt_domain_interface_stats_transmit_errors_total{domain="instance-00000337",target_device="tapa7e2fe95-a7"} 0
-libvirt_domain_interface_stats_transmit_packets_total{domain="instance-00000337",target_device="tapa7e2fe95-a7"} 2.275386e+06
-
-libvirt_domain_memory_stats_actual_balloon_bytes{domain="instance-00000337"} 8.589934592e+09
-libvirt_domain_memory_stats_available_bytes{domain="instance-00000337"} 8.363945984e+09
-libvirt_domain_memory_stats_disk_cache_bytes{domain="instance-00000337"} 0
-libvirt_domain_memory_stats_major_fault_total{domain="instance-00000337"} 3.34448e+06
-libvirt_domain_memory_stats_minor_fault_total{domain="instance-00000337"} 5.6630255354e+10
-libvirt_domain_memory_stats_rss_bytes{domain="instance-00000337"} 8.7020544e+09
-libvirt_domain_memory_stats_unused_bytes{domain="instance-00000337"} 7.72722688e+08
-libvirt_domain_memory_stats_usable_bytes{domain="instance-00000337"} 2.27098624e+09
-libvirt_domain_memory_stats_used_percent{domain="instance-00000337"} 72.84790881786736
-
-libvirt_domain_vcpu_cpu{domain="instance-00000337",vcpu="0"} 7
-libvirt_domain_vcpu_delay_seconds_total{domain="instance-00000337",vcpu="0"} 880.985415109
-libvirt_domain_vcpu_state{domain="instance-00000337",vcpu="0"} 1
-libvirt_domain_vcpu_time_seconds_total{domain="instance-00000337",vcpu="0"} 315190.41
-libvirt_domain_vcpu_wait_seconds_total{domain="instance-00000337",vcpu="0"} 0
-
-libvirt_up 1
-```
-
-## Libvirt/qemu version notice
-Some of the above might be exposed only with:
-
-`libvirt >= v7.2.0`:
-libvirt_domain_vcpu_delay_seconds_total
-
-# Historical
-Project forked from https://github.com/kumina/libvirt_exporter and substantially rewritten.
-Implemented support for several additional metrics, ceph rbd (and network block devices), ovs.
-Implemented statistics collection using GetAllDomainStats
-
-And then forked again from https://github.com/rumanzo/libvirt_exporter_improved and rewritten.
-Implemented meta metrics and more info about disks, interfaces and domain.
-
-This repository provides code for a Prometheus metrics exporter
-for [libvirt](https://libvirt.org/). This exporter connects to any
-libvirt daemon and exports per-domain metrics related to CPU, memory,
-disk and network usage. By default, this exporter listens on TCP port
-9177.
-
-This exporter makes use of
-[libvirt-go](https://gitlab.com/libvirt/libvirt-go-module), the official Go
-bindings for libvirt. This exporter make use of the
-`GetAllDomainStats()`
-
+|event|desc|
+|:-:|:-:|
+|cmt|统计所有级别的总缓存未命中|
+|mbmt|测量读写两种内存带宽的使用情况|
+|mbml|测量本地（非远程）读写两种内存带宽的使用情况|
+|cpu_cycles|统计执行的总 CPU 周期数|
+|instructions|统计成功执行的指令数|
+|cache_references|统计对缓存的引用数，包括命中和未命中|
+|cache_misses|统计缓存未命中数，表示数据需要从更慢的内存中获取|
+|branch_instructions|统计遇到的分支指令数|
+|branch_misses|统计预测错误的分支指令数|
+|bus_cycles|统计用于内存访问的总线周期数|
+|stalled_cycles_frontend|测量 CPU 由于指令获取阶段的问题而停顿的周期|
+|stalled_cycles_backend|测量 CPU 由于执行或内存访问阶段的问题而停顿的周期|
+|ref_cpu_cycles|可以用于标准化其他事件的参考时钟|
+|cpu_clock|量以 CPU 时钟周期为单位的经过时间|
+|task_clock|测量任务运行时以时钟周期为单位的经过时间|
+|page_faults|统计page fault，表示需要从磁盘加载页面|
+|page_faults_min|统计 CPU 在任务之间切换的次数统计min page fault，可以通过无需磁盘访问的方式解决|
+|page_faults_maj|统计big page fault，需要磁盘访问|
+|context_switch|统计 CPU 在任务之间切换的次数|
+|cpu_migrations|统计虚拟机的虚拟 CPU 在物理内核之间迁移的次数|
+|alignment_faults|统计数据在内存中不正确对齐时发生的对齐错误|
+|emulation_faults|统计需要软件模拟的错误数，通常是由于缺少硬件功能|
