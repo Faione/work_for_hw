@@ -3,7 +3,7 @@ mod share_map {
     include!(concat!(env!("OUT_DIR"), "/share_map.skel.rs"));
 }
 
-use std::{env, os::unix::prelude::MetadataExt};
+use std::{collections::BTreeMap, env, fs::read_to_string, os::unix::prelude::MetadataExt};
 
 use anyhow::Ok;
 use clap::{Args, Parser, Subcommand};
@@ -11,7 +11,20 @@ use libbpf_rs::{
     skel::{OpenSkel, SkelBuilder},
     MapFlags, PrintLevel,
 };
+use serde::{Deserialize, Serialize};
 use share_map::*;
+
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+struct VMInfo {
+    pid: u64,
+    kvm_debug_dir: String,
+    cgroup: String,
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+struct Config {
+    vm_infos: BTreeMap<String, VMInfo>,
+}
 
 #[derive(Debug, Parser)]
 struct Command {
@@ -32,6 +45,10 @@ enum Action {
     Get(CommonArgs),
     List,
     Clear,
+    Apply {
+        #[arg(short, long)]
+        file: String,
+    },
 }
 
 #[derive(Debug, Args)]
@@ -127,6 +144,19 @@ fn main() -> anyhow::Result<()> {
                 .delete(&k)
                 .expect("delete element from map failed");
         }),
+        Action::Apply { file } => {
+            let yaml = read_to_string(file).unwrap();
+            let config: Config = serde_yaml::from_str(&yaml).unwrap();
+
+            config.vm_infos.iter().for_each(|(_, vm_info)| {
+                if let Result::Ok(cg_id) = read_cgroup_inode_id(vm_info.cgroup.clone()) {
+                    let cgroup_id = cg_id.to_le_bytes();
+                    cgroup_map
+                        .update(&cgroup_id, &cgroup_id, MapFlags::NO_EXIST)
+                        .expect("insert element to map failed");
+                };
+            })
+        }
     }
 
     Ok(())

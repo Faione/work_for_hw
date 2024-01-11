@@ -11,6 +11,8 @@ clap = { version = "4.3.21", features = ["derive"] }
 libbpf-rs = "0.21.2"
 nix = "0.26.2"
 plain = "0.2.3"
+serde = { version = "1.0.195", features = ["derive"] }
+serde_yaml = "0.9.30"
 tokio = { version = "1.32.0", features = ["full"] }
 
 [build-dependencies]
